@@ -1,24 +1,28 @@
-package com.ventura.heroeservice.model;
+package com.ventura.heroeservice.dto;
 
-import jakarta.persistence.*;
+import com.ventura.heroeservice.model.Heroe;
 
-@Entity
-@Table(name = "heroes", schema = "public")
-public class Heroe {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="id")
+public class HeroeDto {
     private Long id;
     private String superhero;
     private String alterEgo;
     private String firstAppearance;
     private String characters;
     private String altImg;
-    @ManyToOne
-    @JoinColumn(name = "publisherId")
-    private Publisher publisher;
-    public Heroe(){
+    private Long publisherId;
 
+//    public HeroeDto(Heroe heroe){
+//        this.id = heroe.getId();
+//        this.superhero = heroe.getSuperhero();
+//        this.alterEgo = heroe.getAlterEgo();
+//        this.firstAppearance = heroe.getFirstAppearance();
+//        this.characters = heroe.getCharacters();
+//        this.altImg = heroe.getAltImg();
+//        this.publisherId = heroe.getPublisher().getId();
+//    }
+
+
+    public HeroeDto() {
     }
 
     public Long getId() {
@@ -69,11 +73,11 @@ public class Heroe {
         this.altImg = altImg;
     }
 
-    public Publisher getPublisher() {
-        return publisher;
+    public Long getPublisherId() {
+        return publisherId;
     }
 
-    public void setPublisher(Publisher publisher) {
-        this.publisher = publisher;
+    public void setPublisherId(Long publisherId) {
+        this.publisherId = publisherId;
     }
 }

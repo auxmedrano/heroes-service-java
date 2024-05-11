@@ -1,5 +1,7 @@
 package com.ventura.heroeservice.controllers;
 
+import com.ventura.heroeservice.dto.HeroeDto;
+import com.ventura.heroeservice.mappers.HeroeMapper;
 import com.ventura.heroeservice.model.Heroe;
 import com.ventura.heroeservice.model.Publisher;
 import com.ventura.heroeservice.repositories.HeroeRepository;
@@ -9,9 +11,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:8080"}, maxAge = 3600)
 @RestController
-@RequestMapping("hero")
+@RequestMapping("/api/heroes")
 public class HeroController {
     public final HeroeRepository heroeRepository;
 
@@ -20,18 +24,24 @@ public class HeroController {
     }
 
     @GetMapping()
-    public List<Heroe> getAll() {
-        return heroeRepository.findAll();
+    public List<HeroeDto> getAll() {
+        var heroes = heroeRepository.findAll();
+        return heroes.stream().map(HeroeMapper::toHeroeDto).collect(Collectors.toList());
     }
 
     @PostMapping()
-    public Heroe createUser(@RequestBody Heroe heroe) {
+    public Heroe createHeroe(@RequestBody Heroe heroe) {
         return heroeRepository.save(heroe);
     }
 
-    @PutMapping()
-    public Heroe updateUser(@RequestBody Heroe heroe) {
-        return heroeRepository.save(heroe);
+    @PutMapping("/{id}")
+    public HeroeDto updateHeroe(@RequestBody HeroeDto heroeDto) {
+        var heroeEntity = HeroeMapper.toHeroe(heroeDto);
+
+        var savedHeroe = heroeRepository.save(heroeEntity);
+
+        return HeroeMapper.toHeroeDto(savedHeroe);
+
     }
 
     @PostMapping("/bulk")
@@ -40,14 +50,14 @@ public class HeroController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Heroe> getById(@PathVariable Long id) {
+    public ResponseEntity<HeroeDto> getById(@PathVariable Long id) {
 
         Optional<Heroe> heroeOptional = heroeRepository.findById(id);
 //        if (heroeOptional.isPresent()){
 //            return heroeOptional.get();
 //        } else { return new Heroe();}
 
-        return heroeOptional.map(heroe -> ResponseEntity.ok().body(heroe)).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
+        return heroeOptional.map(heroe -> ResponseEntity.ok().body(HeroeMapper.toHeroeDto(heroeOptional.get()))).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
 
 
         //opcional sirve para solucionar el problema de null

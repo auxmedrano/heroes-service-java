@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("publisher")
+@RequestMapping("api/publishers")
 public class PublisherController {
     private final PublisherRepository publisherRepository;
     public PublisherController(PublisherRepository publisherRepository) {
         this.publisherRepository = publisherRepository;
     }
-    @GetMapping("/all")
+    @GetMapping("")
     public List<Publisher> getAll(){
         return publisherRepository.findAll();
     }
