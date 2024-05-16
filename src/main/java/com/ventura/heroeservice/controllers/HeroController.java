@@ -5,6 +5,7 @@ import com.ventura.heroeservice.mappers.HeroeMapper;
 import com.ventura.heroeservice.model.Heroe;
 import com.ventura.heroeservice.model.Publisher;
 import com.ventura.heroeservice.repositories.HeroeRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +18,9 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/heroes")
 public class HeroController {
+
     public final HeroeRepository heroeRepository;
+
 
     public HeroController(HeroeRepository heroeRepository) {
         this.heroeRepository = heroeRepository;
@@ -45,8 +48,10 @@ public class HeroController {
     }
 
     @PostMapping("/bulk")
-    public List<Heroe> bulkHeroes(@RequestBody List<Heroe> heroeList) {
-        return heroeRepository.saveAll(heroeList);
+    public List<HeroeDto> bulkHeroes(@RequestBody List<HeroeDto> heroeDtoList) {
+        List<Heroe> heroeList = heroeDtoList.stream().map(HeroeMapper::toHeroe).toList();
+
+        return heroeRepository.saveAll(heroeList).stream().map(HeroeMapper::toHeroeDto).collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
@@ -80,6 +85,12 @@ public class HeroController {
             return ResponseEntity.notFound().build();
         }
 
+    }
+
+    @DeleteMapping()
+    public ResponseEntity<Void> deleteAll() {
+        heroeRepository.deleteAll();
+        return ResponseEntity.noContent().build();
     }
 
 }
